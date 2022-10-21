@@ -7,7 +7,7 @@ gray_img = cv2.cvtColor(raw_img, cv2.COLOR_BGR2GRAY)
 
 ret, threshold = cv2.threshold(
     gray_img,
-    150,  # Any grayscale value above this becomes white, the rest becomes black
+    150,  # Any grayscale value above this becomes white, the rest becomes black TODO: find best metriic for binarization
     255, cv2.THRESH_BINARY)  # Creates binarized image
 
 contours:list
