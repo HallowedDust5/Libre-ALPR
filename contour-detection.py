@@ -10,4 +10,15 @@ ret, threshold = cv2.threshold(
     150,  # Any grayscale value above this becomes white, the rest becomes black
     255, cv2.THRESH_BINARY)  # Creates binarized image
 
-contours, hierarchy = cv2.findContours()
+contours:list
+contours, hierarchy = cv2.findContours(
+    image=threshold,
+    mode=cv2.RETR_TREE,  # mode is the type of contours that will be retrieved
+    method=cv2.CHAIN_APPROX_SIMPLE  # method is which points within a contour are stored
+)
+
+
+
+contours.sort(key=cv2.contourArea,reverse=True) #Sorts contours from biggest to smallest by area
+
+
