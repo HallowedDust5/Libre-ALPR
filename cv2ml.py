@@ -4,8 +4,14 @@ import numpy as np
 import imutils
 import easyocr
 
+failed = 0
 past_result = None
 result = None
+
+run_all = False
+runall = input("type y to run through all images")
+if runall == 'y':
+    run_all = True
 show_plots = False
 show = input("type y to show images")
 if show == 'y':
@@ -67,12 +73,15 @@ for i in range(104):
         print(result[0][1])
     except:
         print("Text not detected")
+
     if not result == past_result:
         print(result)
     past_result = result
 
-    quit = input("q to quit, enter for next")
-    if quit == 'q':
-        break
+    if not run_all:
+        quit = input("q to quit, enter for next")
+        if quit == 'q':
+            break
 
+print("failed " + failed + "/104 ")
 print('finished')
