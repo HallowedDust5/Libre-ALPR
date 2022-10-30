@@ -2,12 +2,14 @@ import cv2
 import numpy as np
 
 raw_img = cv2.imread(r'car15crop.png')
+raw_copy = np.copy(raw_img)
+
 # Converts image to grayscale
 gray_img = cv2.cvtColor(raw_img, cv2.COLOR_BGR2GRAY)
 
 ret, threshold = cv2.threshold(
     gray_img,
-    100,  #TODO: find best metriic for binarization
+    100,  # TODO: find best metriic for binarization
     255, cv2.THRESH_BINARY)  # Creates binarized image
 
 contours: list
@@ -23,7 +25,7 @@ contours = list(contours)
 contours.sort(key=cv2.contourArea, reverse=True)
 
 largest_contour = contours[0]
-cv2.drawContours(raw_img,[largest_contour],-1,(0,255,0),3)
+cv2.drawContours(raw_img, [largest_contour], -1, (0, 255, 0), 3)
 
 
 def normalizeLP(contour):
@@ -33,25 +35,25 @@ def normalizeLP(contour):
     contour_corners = np.array(cv2.boxPoints(bounding_rect_info))
 
     # Calculates rectangle width and height
-    width = int(bounding_rect_info[1][0])
     height = int(bounding_rect_info[1][1])
-    # Gets the smallest possible straight rectangle around the given contour
-    x, y, w, h = cv2.boundingRect(contour)
-    dst_points = np.float32([ #TODO: Figure out how to not have to rotate 90 degrees
-        (0,height-1),
-        (0,0),
-        (width-1,0),
-        (width-1,height-1),
-
+    width = height*2  # Multiplied by 2 because US license plates are 2:1
+    dst_points = np.float32([
+        (0, 0),
+        (width, 0),
+        (width, height),
+        (0, height),
     ])
 
-    mat = cv2.getPerspectiveTransform(contour_corners, dst_points)
-    warped = cv2.warpPerspective(raw_img, mat, raw_img.shape[:2], flags=cv2.INTER_LINEAR)
 
-    return *cv2.boundingRect(contour), cv2.rotate(warped,cv2.ROTATE_90_CLOCKWISE)
+    warp_mat = cv2.getPerspectiveTransform(contour_corners, dst_points)
+    warped = cv2.warpPerspective(
+        raw_img, warp_mat, (width,height), flags=cv2.INTER_LINEAR)
 
-x,y,h,w, warped_lp = normalizeLP(largest_contour)
+    return warped
+
+
+warped_lp = normalizeLP(largest_contour)
 cv2.imshow('src', np.array(raw_img))
-cv2.waitKey(0)
+cv2.imshow('Points', raw_copy)
 cv2.imshow('warped', warped_lp)
 cv2.waitKey(0)
