@@ -16,8 +16,8 @@ for image in os.listdir(directory):
         to_append[1] = img.width
         to_append[2] = img.height
         txt = open(directory + 'Label/' + image[0:-4] + '.txt', 'r')
+        box = []
         for line in txt:
-            cur = 4
             number = False
             rec = ''
             for i in line:
@@ -28,19 +28,23 @@ for image in os.listdir(directory):
                 except ValueError:
                     if not(i == '.') and number:
                         number = False
-                        to_append[cur] = float(rec)
-                        cur += 1
+                        box.append(float(rec))
                         rec = ''
                     elif number:
                         rec += i
             to_append[8] = row
             row += 1
             new_row = ''
+            for i in range(4):
+                to_append[4] = box[0]
+                to_append[5] = box[2]
+                to_append[6] = box[1]
+                to_append[7] = box[3]
             for i in range(9):
                 new_row += str(to_append[i]) + ','
             csv_open = open(new_csv_name, 'a')
             csv_open.write(new_row[0:-1] + '\n')
             csv_open.close()
         txt.close()
-        # inpu = input("next\n")
+        inpu = input("next\n")
 
