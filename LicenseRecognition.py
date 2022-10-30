@@ -8,7 +8,7 @@ model.fit(dataset)
 image = utils.read_image('dataset/0c756c9366a8cb10.jpg')
 license = model.predict(image)
 print(license)
-visualize.show_labed_image(image, license)
+visualize.show_labeled_image(image, license)
 visualize.detect_live(model)
 
 

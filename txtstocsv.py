@@ -1,11 +1,11 @@
 import pandas as pd
 import os
-from PIL import Image
+from PIL import Image #pip install pillow
 
 directory = r'dataset/'
 new_csv_name = 'dataset.csv'
 new_csv = open(new_csv_name, 'w')
-new_csv.write('filename, width, height, class, xmin, ymin, xmax, ymax, image_id\n')
+new_csv.write('filename,width,height,class,xmin,ymin,xmax,ymax,image_id\n')
 new_csv.close()
 csv = pd.read_csv(new_csv_name)
 col = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'image_id']
