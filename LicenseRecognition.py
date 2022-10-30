@@ -1,15 +1,13 @@
 from detecto.core import Model, Dataset
 from detecto import utils, visualize
-from detecto.utils import xml_to_csv
 
-xml_to_csv('your_labels/', 'validation-annotations-box.csv')
-dataset = Dataset('validation-annotations-bbox.csv', 'Vehicleregistrationplate/')
-model = Model(['license'])
+dataset = Dataset('dataset.csv', 'dataset/')
+model = Model(['License'])
 model.fit(dataset)
 
-image = utils.read_image('Vehicleregistrationplate/0c756c9366a8cb10.jpg')
+image = utils.read_image('dataset/0c756c9366a8cb10.jpg')
 license = model.predict(image)
-print(cars)
+print(license)
 visualize.show_labed_image(image, license)
 visualize.detect_live(model)
 
