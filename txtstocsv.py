@@ -37,8 +37,8 @@ for image in os.listdir(directory):
             new_row = ''
             for i in range(4):
                 to_append[4] = box[0]
-                to_append[5] = box[2]
-                to_append[6] = box[1]
+                to_append[5] = box[1]
+                to_append[6] = box[2]
                 to_append[7] = box[3]
             for i in range(9):
                 new_row += str(to_append[i]) + ','
