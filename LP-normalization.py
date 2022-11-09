@@ -2,13 +2,23 @@ import cv2
 import numpy as np
 
 
+def main():
+
+    pass
+
+
 def findLargestContour(img: np.ndarray):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     _, binarized_img = cv2.threshold(
         gray_img,
-        100,  # TODO: find best metriic for binarization
-        255, cv2.THRESH_BINARY)  # Creates binarized image TODO: Test different binarization methods
+        # TODO: find best metriic for binarization
+        # 100, #Some sort of constant
+        # np.median(gray_img),
+        # np.average(gray_img),
+        0,
+        255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU)  # Creates binarized image TODO: Test different binarization methods
 
     contours, _ = cv2.findContours(
         image=binarized_img,
@@ -20,7 +30,8 @@ def findLargestContour(img: np.ndarray):
     # Sorts contours from biggest to smallest by area
     contours.sort(key=cv2.contourArea, reverse=True)
 
-    return contours[0] # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    return contours[0]
 
 
 def perspectiveCorrection(og_img: np.ndarray):
@@ -47,3 +58,7 @@ def perspectiveCorrection(og_img: np.ndarray):
         img, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
 
     return warped
+
+
+if __name__ == '__main__':
+    main()
