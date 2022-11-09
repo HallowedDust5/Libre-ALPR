@@ -2,11 +2,6 @@ import cv2
 import numpy as np
 
 
-def main():
-
-    pass
-
-
 def findLargestContour(img: np.ndarray):
     """Returns largest contour in an image given a to be determined binarization. 
     Currently operates using Otsu's binarization.
@@ -16,7 +11,7 @@ def findLargestContour(img: np.ndarray):
 
     Returns:
        contour : Largest contour in the image. Collection of points that represent the contour's shape.
-    """    
+    """
     img_copy = np.copy(img)
     gray_img = cv2.cvtColor(img_copy, cv2.COLOR_BGR2GRAY)
 
@@ -53,7 +48,7 @@ def perspectiveCorrection(img: np.ndarray):
 
     Returns:
         np.ndarray: Corrected image
-    """    
+    """
     img_copy = np.copy(img)
 
     largest_contour = findLargestContour(img_copy)
@@ -77,7 +72,3 @@ def perspectiveCorrection(img: np.ndarray):
         img_copy, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
 
     return warped
-
-
-if __name__ == '__main__':
-    main()
