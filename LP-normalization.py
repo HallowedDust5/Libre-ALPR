@@ -8,7 +8,17 @@ def main():
 
 
 def findLargestContour(img: np.ndarray):
-    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    """Returns largest contour in an image given a to be determined binarization. 
+    Currently operates using Otsu's binarization.
+
+    Args:
+        img (np.ndarray): License plate image
+
+    Returns:
+       contour : Largest contour in the image. Collection of points that represent the contour's shape.
+    """    
+    img_copy = np.copy(img)
+    gray_img = cv2.cvtColor(img_copy, cv2.COLOR_BGR2GRAY)
 
     _, binarized_img = cv2.threshold(
         gray_img,
@@ -34,10 +44,19 @@ def findLargestContour(img: np.ndarray):
     return contours[0]
 
 
-def perspectiveCorrection(og_img: np.ndarray):
-    img = np.copy(og_img)
+def perspectiveCorrection(img: np.ndarray):
+    """Corrects perspective distortion on a license plate image 
+    by detecting the corners of a given license plate and then reverse warping it.
 
-    largest_contour = findLargestContour(img)
+    Args:
+        img (np.ndarray): License plate iamge
+
+    Returns:
+        np.ndarray: Corrected image
+    """    
+    img_copy = np.copy(img)
+
+    largest_contour = findLargestContour(img_copy)
 
     # Gets the smallest possible rectangle that's angle agnostic around the given contour
     bounding_rect_info = cv2.minAreaRect(largest_contour)
@@ -55,7 +74,7 @@ def perspectiveCorrection(og_img: np.ndarray):
 
     warp_mat = cv2.getPerspectiveTransform(contour_corners, dst_points)
     warped = cv2.warpPerspective(
-        img, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
+        img_copy, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
 
     return warped
 
