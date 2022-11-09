@@ -44,7 +44,7 @@ def perspectiveCorrection(img: np.ndarray):
     by detecting the corners of a given license plate and then reverse warping it.
 
     Args:
-        img (np.ndarray): License plate iamge
+        img (np.ndarray): License plate image
 
     Returns:
         np.ndarray: Corrected image
