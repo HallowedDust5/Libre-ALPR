@@ -19,6 +19,8 @@ def main():
 def findLargestContour(img: np.ndarray):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+    #bruh
+
     _, binarized_img = cv2.threshold(
         gray_img,
         # TODO: find best metriic for binarization
