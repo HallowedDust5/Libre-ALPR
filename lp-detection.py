@@ -2,29 +2,32 @@ from detecto import utils, visualize
 from detecto.core import Model, Dataset
 from PIL import Image
 
-#TODO put file name and path here for the model
-model_name = r""
-labels = ["License"]
-#Loads the Model
-model = Model.load(model_name, labels)
 
-#TODO determine file path to new images and how to iterate through new images
-image_name = r""
-image = utils.read_image(image_name)
-image_data = [image_name] #Temporary array holding the images attributes
-#Predicts the image
-labels, boxes, scores = model.predict(image)
-Licenses = [] 
-#Uses Licenses Array and creates new cropped images for each 
-im = Image.open(image_name) #Opens image using Pillow to be cropped depending on dimensions established by boxes
-for i in range(len(boxes)): #Assumes that boxes in an array of arrays with each inner array housing coordinates for each box
-    width, height = im.size
+def load_model(filepath):
+    #USE filepath for model as parameter
+    #returns the working model. Set equal to a variable
+    labels = ["License"]
+    #Loads the Model
+    return Model.load(model_name, labels)
+
+
+def predict_image(image_name):
+    #image name as parameter string
+    #returns the labels, boxes, and scores of image. SET equal to three variables
+    #Eg labels, boxes, scores = predict_image(image_name)
+    image = utils.read_image(image_name)
+    #Predicts the image
+    return model.predict(image)
+
+
+def crop_image(image_name, coordinates):
+    #Returns the cropped image using the Pillow module
+    #Takes in parameters, image_name and array of coordinates for box
+    im = Image.open(image_name) #Opens image using Pillow to be cropped depending on dimensions established by boxes
     #TODO change index depending on how the boxes variable is formatted to determine dimensions of license location
-    left = boxes[0]
-    top = boxes[1]
-    right = boxes[2]
-    bottom = boxes[3]
-    cropped_image = im.crop((left,top,right,bottom))
-    Licenses.append(cropped_image)
+    left = dimensions[0]
+    top = dimensions[1]
+    right = dimensions[2]
+    bottom = dimensions[3]
+    return im.crop((left,top,right,bottom))
 
-image_data.append(Licenses)
