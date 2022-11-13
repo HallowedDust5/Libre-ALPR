@@ -9,7 +9,12 @@ new_csv.close()
 col = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'image_id']
 to_append = ['filename', 'width', 'height', 'License', 'xmin', 'ymin', 'xmax', 'ymax', 'image_id']
 row = 0
+counter = 0
+print(len(os.listdir(directory)))
 for image in os.listdir(directory):
+    counter += 1
+    if counter == 190:
+        break
     to_append[0] = image
     if os.path.isfile(os.path.join(directory, image)):
         img = Image.open(directory + image)
@@ -46,5 +51,5 @@ for image in os.listdir(directory):
             csv_open.write(new_row[0:-1] + '\n')
             csv_open.close()
         txt.close()
-        inpu = input("next\n")
+        # inpu = input("next\n")
 
