@@ -5,15 +5,35 @@ import os
 
 def main():
 
-    for im_obj in os.scandir('/home/main/Desktop/License-Plates/lp-images'):
+    for im_obj in os.scandir('lp-images'):
         im = cv2.imread(im_obj.path)
-        finished_img = perspectiveCorrection(im)
+        contrast_warped_img,bin_contrast,gray_contrast = perspectiveCorrectionwContrast(im)
+        no_contrast_warped_img,bin_no,gray_no = perspectiveCorrection(im)
 
         im = cv2.resize(im,(500,500))
-        finished_img = cv2.resize(finished_img,(500,500))
+        contrast_warped_img = cv2.resize(contrast_warped_img,(500,500))
+        no_contrast_warped_img = cv2.resize(no_contrast_warped_img,(500,500))
+
+        bin_contrast = cv2.resize(bin_contrast,(500,500))
+        gray_contrast = cv2.resize(gray_contrast,(500,500))
+        bin_no = cv2.resize(bin_no,(500,500))
+        gray_no = cv2.resize(gray_no,(500,500))
+
+
 
         cv2.imshow('unwarped',im)
-        cv2.imshow('warped',finished_img)
+        cv2.imshow('warped w/o contrast',no_contrast_warped_img)
+        cv2.imshow('warped w contrast',contrast_warped_img)
+
+        cv2.imshow('contrasted binarization',bin_contrast)
+        cv2.imshow('constrated grayscale',gray_contrast)
+        cv2.imshow('no contrast binar',bin_no)
+        cv2.imshow('no contrast grayscale',gray_no)
+
+
+
+
+
         cv2.waitKey(0)
 
 def findLargestContour(img: np.ndarray):
@@ -40,13 +60,13 @@ def findLargestContour(img: np.ndarray):
     # Sorts contours from biggest to smallest by area
     contours.sort(key=cv2.contourArea, reverse=True)
 
-    return contours[0] # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    return contours[0], binarized_img,gray_img # The largest contour is chosen because that's what most likely going to be a LP in the given image
 
 
 def perspectiveCorrection(og_img: np.ndarray):
     img = np.copy(og_img)
 
-    largest_contour = findLargestContour(img)
+    largest_contour, binarized_img,gray_img = findLargestContour(img)
 
     # Gets the smallest possible rectangle that's angle agnostic around the given contour
     bounding_rect_info = cv2.minAreaRect(largest_contour)
@@ -66,7 +86,33 @@ def perspectiveCorrection(og_img: np.ndarray):
     warped = cv2.warpPerspective(
         img, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
 
-    return warped
+    return warped, binarized_img,gray_img
+
+
+def perspectiveCorrectionwContrast(og_img: np.ndarray):
+    img = np.copy(og_img)
+
+    largest_contour, binarized_img,gray_img = findLargestContourwContrast(img)
+
+    # Gets the smallest possible rectangle that's angle agnostic around the given contour
+    bounding_rect_info = cv2.minAreaRect(largest_contour)
+    contour_corners = np.array(cv2.boxPoints(bounding_rect_info))
+
+    # Calculates rectangle width and height
+    height = int(bounding_rect_info[1][1])
+    width = height*2  # Multiplied by 2 because US license plates are 2:1
+    dst_points = np.float32([
+        (0, 0),
+        (width, 0),
+        (width, height),
+        (0, height),
+    ])
+
+    warp_mat = cv2.getPerspectiveTransform(contour_corners, dst_points)
+    warped = cv2.warpPerspective(
+        img, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
+
+    return warped, binarized_img,gray_img
 
 
 def findLargestContourwContrast(img: np.ndarray):
@@ -95,7 +141,7 @@ def findLargestContourwContrast(img: np.ndarray):
     # Sorts contours from biggest to smallest by area
     contours.sort(key=cv2.contourArea, reverse=True)
 
-    return contours[0] # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    return contours[0], binarized_img,gray_img # The largest contour is chosen because that's what most likely going to be a LP in the given image
 
 
 
