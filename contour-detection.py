@@ -19,7 +19,7 @@ def main():
 def findLargestContour(img: np.ndarray):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    #bruh
+
 
     _, binarized_img = cv2.threshold(
         gray_img,
@@ -69,6 +69,33 @@ def perspectiveCorrection(og_img: np.ndarray):
     return warped
 
 
+def findLargestContourwContrast(img: np.ndarray):
+    constrast_image = cv2.convertScaleAbs(img, alpha=3, beta=-100)
+
+    gray_img = cv2.cvtColor(constrast_image, cv2.COLOR_BGR2GRAY)
+
+
+
+    _, binarized_img = cv2.threshold(
+        gray_img,
+        # TODO: find best metriic for binarization
+        # 100, #Some sort of constant
+        # np.median(gray_img),
+        np.average(gray_img),
+
+        255, cv2.THRESH_BINARY)  # Creates binarized image TODO: Test different binarization methods
+
+    contours, _ = cv2.findContours(
+        image=binarized_img,
+        mode=cv2.RETR_TREE,  # mode is the type of contours that will be retrieved
+        method=cv2.CHAIN_APPROX_SIMPLE  # method is which points within a contour are stored
+    )
+
+    contours = list(contours)
+    # Sorts contours from biggest to smallest by area
+    contours.sort(key=cv2.contourArea, reverse=True)
+
+    return contours[0] # The largest contour is chosen because that's what most likely going to be a LP in the given image
 
 
 
