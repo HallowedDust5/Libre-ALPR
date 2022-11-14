@@ -35,3 +35,6 @@ def crop_image(image_name, coordinates):
     bottom = dimensions[3]
     return im.crop((left,top,right,bottom))
 
+
+def showPillowImage(image):
+    image.show()
