@@ -11,12 +11,16 @@ def load_model(filepath):
     return Model.load(model_name, labels)
 
 
-def predict_image(image_name):
-    #image name as parameter string
+def predict_image(image_name, box_only): #Possible change to only return boxes
+    #image name as parameter string and boolean box_only to just return the box
     #returns the labels, boxes, and scores of image. SET equal to three variables
     #Eg labels, boxes, scores = predict_image(image_name)
     image = utils.read_image(image_name)
     #Predicts the image
+    if box_only:
+        a, boxes, c = model.predict(image)
+        return boxes
+    #Coordinates given as an array [xmin, ymin, xmax, ymax]
     return model.predict(image)
 
 
