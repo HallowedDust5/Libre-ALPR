@@ -13,7 +13,7 @@ counter = 0
 print(len(os.listdir(directory)))
 for image in os.listdir(directory):
     counter += 1
-    if counter == 190:
+    if counter == 350:
         break
     to_append[0] = image
     if os.path.isfile(os.path.join(directory, image)):
