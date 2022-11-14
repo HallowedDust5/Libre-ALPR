@@ -24,7 +24,7 @@ def predict_image(image_name, box_only): #Possible change to only return boxes
     return model.predict(image)
 
 
-def crop_image(image_name, coordinates):
+def crop_image(image_name, dimensions):
     #Returns the cropped image using the Pillow module
     #Takes in parameters, image_name and array of coordinates for box
     im = Image.open(image_name) #Opens image using Pillow to be cropped depending on dimensions established by boxes
