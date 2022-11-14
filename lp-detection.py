@@ -8,7 +8,7 @@ def load_model(filepath):
     #returns the working model. Set equal to a variable
     labels = ["License"]
     #Loads the Model
-    return Model.load(model_name, labels)
+    return Model.load(filepath, labels)
 
 
 def predict_image(image_name, box_only): #Possible change to only return boxes
