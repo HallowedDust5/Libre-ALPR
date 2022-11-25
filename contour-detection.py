@@ -1,45 +1,63 @@
+import os
+from random import randint
+
 import cv2
 import numpy as np
-import os
+
+
+ALPHA_RANGE = (0,5)
+BETA_RANGE = (-100,300)
+ALPHA_BETA_PAIRS = {}
 
 
 def main():
+    """
+    1: First image is better than the second
+    2: Second image is better than first
+    3: Neither are good
+    4: Original image is better
+    """
 
     for im_obj in os.scandir('lp-images'):
         im = cv2.imread(im_obj.path)
-        contrast_warped_img,bin_contrast,gray_contrast = perspectiveCorrectionwContrast(im)
-        no_contrast_warped_img,bin_no,gray_no = perspectiveCorrection(im)
 
-        im = cv2.resize(im,(500,500))
-        contrast_warped_img = cv2.resize(contrast_warped_img,(500,500))
-        no_contrast_warped_img = cv2.resize(no_contrast_warped_img,(500,500))
-
-        bin_contrast = cv2.resize(bin_contrast,(500,500))
-        gray_contrast = cv2.resize(gray_contrast,(500,500))
-        bin_no = cv2.resize(bin_no,(500,500))
-        gray_no = cv2.resize(gray_no,(500,500))
+        alpha_1,beta_1 = generateAlphaBeta()
+        alpha_2,beta_2 = generateAlphaBeta()
 
 
+        im_1, im_1_bin, im_1_gray = perspectiveCorrectionwContrast(im)
+        im_2, im_2_bin, im_2_gray = perspectiveCorrectionwContrast(im)
+        resize_shape = (500,500)
 
-        cv2.imshow('unwarped',im)
-        cv2.imshow('warped w/o contrast',no_contrast_warped_img)
-        cv2.imshow('warped w contrast',contrast_warped_img)
 
-        cv2.imshow('contrasted binarization',bin_contrast)
-        cv2.imshow('constrated grayscale',gray_contrast)
-        cv2.imshow('no contrast binar',bin_no)
-        cv2.imshow('no contrast grayscale',gray_no)
+        im = cv2.resize(im,resize_shape)
+
+        im_1 = cv2.resize(im_1,resize_shape)
+        im_1_bin = cv2.resize(im_1_bin,resize_shape)
+        im_1_gray = cv2.resize(im_1_gray,resize_shape)
+
+        im_2 = cv2.resize(im_2,resize_shape)
+        im_2_bin = cv2.resize(im_2_bin,resize_shape)
+        im_2_gray = cv2.resize(im_2_gray,resize_shape)
+    
 
 
 
 
+  
 
         cv2.waitKey(0)
 
+def generateAlphaBeta():
+    alpha,beta = randint(*ALPHA_RANGE),randint(*BETA_RANGE)
+    
+    return 
+
+
+
+
 def findLargestContour(img: np.ndarray):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-
 
     _, binarized_img = cv2.threshold(
         gray_img,
@@ -60,13 +78,14 @@ def findLargestContour(img: np.ndarray):
     # Sorts contours from biggest to smallest by area
     contours.sort(key=cv2.contourArea, reverse=True)
 
-    return contours[0], binarized_img,gray_img # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    return contours[0], binarized_img, gray_img
 
 
 def perspectiveCorrection(og_img: np.ndarray):
     img = np.copy(og_img)
 
-    largest_contour, binarized_img,gray_img = findLargestContour(img)
+    largest_contour, binarized_img, gray_img = findLargestContour(img)
 
     # Gets the smallest possible rectangle that's angle agnostic around the given contour
     bounding_rect_info = cv2.minAreaRect(largest_contour)
@@ -86,13 +105,14 @@ def perspectiveCorrection(og_img: np.ndarray):
     warped = cv2.warpPerspective(
         img, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
 
-    return warped, binarized_img,gray_img
+    return warped, binarized_img, gray_img
 
 
-def perspectiveCorrectionwContrast(og_img: np.ndarray):
+def perspectiveCorrectionwContrast(og_img: np.ndarray, alpha, beta):
     img = np.copy(og_img)
 
-    largest_contour, binarized_img,gray_img = findLargestContourwContrast(img)
+    largest_contour, binarized_img, gray_img = findLargestContourwContrast(
+        img, alpha, beta)
 
     # Gets the smallest possible rectangle that's angle agnostic around the given contour
     bounding_rect_info = cv2.minAreaRect(largest_contour)
@@ -112,15 +132,13 @@ def perspectiveCorrectionwContrast(og_img: np.ndarray):
     warped = cv2.warpPerspective(
         img, warp_mat, (width, height), flags=cv2.INTER_LINEAR)
 
-    return warped, binarized_img,gray_img
+    return warped, binarized_img, gray_img
 
 
-def findLargestContourwContrast(img: np.ndarray):
-    constrast_image = cv2.convertScaleAbs(img, alpha=3, beta=-100)
+def findLargestContourwContrast(img: np.ndarray, alpha, beta):
+    constrast_image = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
 
     gray_img = cv2.cvtColor(constrast_image, cv2.COLOR_BGR2GRAY)
-
-
 
     _, binarized_img = cv2.threshold(
         gray_img,
@@ -141,8 +159,8 @@ def findLargestContourwContrast(img: np.ndarray):
     # Sorts contours from biggest to smallest by area
     contours.sort(key=cv2.contourArea, reverse=True)
 
-    return contours[0], binarized_img,gray_img # The largest contour is chosen because that's what most likely going to be a LP in the given image
-
+    # The largest contour is chosen because that's what most likely going to be a LP in the given image
+    return contours[0], binarized_img, gray_img
 
 
 if __name__ == '__main__':
